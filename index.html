@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吉祥运势占卜</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 105, 180, 0.1) 0%, transparent 40%),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 11px),
+                repeating-linear-gradient(135deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 11px);
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 105, 180, 0.1) 100%);
+            z-index: -1;
+        }
+
+        .title {
+            text-align: center;
+            color: #FFD700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            position: relative;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #FFA500;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 5px rgba(255, 165, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        input[type="date"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #121212;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(30deg);
+            transition: all 0.6s ease;
+        }
+
+        .btn:hover::after {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            display: none;
+            color: white;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fortune-title {
+            color: #FFD700;
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .fortune-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            border-left: 4px solid #FFD700;
+            transition: transform 0.3s ease;
+        }
+
+        .fortune-item:hover {
+            transform: translateX(5px);
+        }
+
+        .fortune-label {
+            font-weight: bold;
+            color: #FFA500;
+            display: inline-block;
+            width: 80px;
+            text-shadow: 0 0 5px rgba(255, 165, 0, 0.3);
+        }
+
+        .fortune-value {
+            color: white;
+            margin-left: 10px;
+        }
+
+        .stars {
+            color: #FFD700;
+            font-size: 1.2em;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .lucky-item {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin: 3px;
+            font-size: 0.9em;
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .zodiac-icon {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+
+        .loading {
+            text-align: center;
+            color: #FFA500;
+            font-size: 1.2em;
+            display: none;
+            text-shadow: 0 0 5px rgba(255, 165, 0, 0.3);
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .title {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🌟 吉祥运势占卜 🌟</h1>
+        <p class="subtitle">输入您的出生信息，获取今日专属运势</p>
+        
+        <form id="fortuneForm">
+            <div class="form-group">
+                <label for="birthDate">出生日期：</label>
+                <input type="date" id="birthDate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">姓名（可选）：</label>
+                <input type="text" id="name" placeholder="请输入您的姓名">
+            </div>
+            
+            <button type="submit" class="btn">🔮 开始占卜今日运势</button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <p>🔮 正在为您占卜今日运势...</p>
+        </div>
+        
+        <div class="result" id="result">
+            <h2 class="fortune-title">✨ 今日运势 ✨</h2>
+            <div id="fortuneContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 星座数据
+        const zodiacData = {
+            '白羊座': { icon: '♈', date: '3.21-4.19', element: '火' },
+            '金牛座': { icon: '♉', date: '4.20-5.20', element: '土' },
+            '双子座': { icon: '♊', date: '5.21-6.21', element: '风' },
+            '巨蟹座': { icon: '♋', date: '6.22-7.22', element: '水' },
+            '狮子座': { icon: '♌', date: '7.23-8.22', element: '火' },
+            '处女座': { icon: '♍', date: '8.23-9.22', element: '土' },
+            '天秤座': { icon: '♎', date: '9.23-10.23', element: '风' },
+            '天蝎座': { icon: '♏', date: '10.24-11.22', element: '水' },
+            '射手座': { icon: '♐', date: '11.23-12.21', element: '火' },
+            '摩羯座': { icon: '♑', date: '12.22-1.19', element: '土' },
+            '水瓶座': { icon: '♒', date: '1.20-2.18', element: '风' },
+            '双鱼座': { icon: '♓', date: '2.19-3.20', element: '水' }
+        };
+
+        // 运势数据
+        const fortuneData = {
+            综合运势: ['⭐⭐⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐', '⭐⭐'],
+            爱情运势: ['⭐⭐⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐', '⭐⭐'],
+            事业运势: ['⭐⭐⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐', '⭐⭐'],
+            财富运势: ['⭐⭐⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐', '⭐⭐'],
+            幸运数字: ['3', '7', '8', '9', '13', '21', '28'],
+            幸运颜色: ['红色', '蓝色', '绿色', '紫色', '金色', '银色', '粉色'],
+            幸运方位: ['东方', '南方', '西方', '北方', '东南方', '西南方', '东北方', '西北方'],
+            幸运物品: ['水晶', '玉石', '红绳', '硬币', '四叶草', '星星', '月亮']
+        };
+
+        // 运势建议
+        const suggestions = {
+            爱情: ['今天适合表达心意', '保持真诚的态度', '多关心身边的人', '缘分就在不远处'],
+            事业: ['把握机会展现才华', '团队合作会带来好运', '保持积极的心态', '细节决定成败'],
+            财富: ['理性消费是明智选择', '投资需要谨慎考虑', '意外之财可能降临', '勤俭节约积累财富'],
+            健康: ['保持充足睡眠', '适量运动有益健康', '饮食要均衡营养', '保持心情愉悦']
+        };
+
+        // 获取星座
+        function getZodiac(month, day) {
+            if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return '白羊座';
+            if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return '金牛座';
+            if ((month == 5 && day
