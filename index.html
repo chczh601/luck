@@ -322,8 +322,133 @@
             健康: ['保持充足睡眠', '适量运动有益健康', '饮食要均衡营养', '保持心情愉悦']
         };
 
-        // 获取星座
+                // 获取星座
         function getZodiac(month, day) {
             if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return '白羊座';
             if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return '金牛座';
-            if ((month == 5 && day
+            if ((month == 5 && day >= 21) || (month == 6 && day <= 21)) return '双子座';
+            if ((month == 6 && day >= 22) || (month == 7 && day <= 22)) return '巨蟹座';
+            if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return '狮子座';
+            if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return '处女座';
+            if ((month == 9 && day >= 23) || (month == 10 && day <= 23)) return '天秤座';
+            if ((month == 10 && day >= 24) || (month == 11 && day <= 22)) return '天蝎座';
+            if ((month == 11 && day >= 23) || (month == 12 && day <= 21)) return '射手座';
+            if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) return '摩羯座';
+            if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return '水瓶座';
+            return '双鱼座';
+        }
+
+        // 随机选择数组元素
+        function randomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        // 生成运势
+        function generateFortune(birthDate, name) {
+            const birth = new Date(birthDate);
+            const today = new Date();
+            
+            const zodiac = getZodiac(birth.getMonth() + 1, birth.getDate());
+            const zodiacInfo = zodiacData[zodiac];
+            
+            const userName = name || '朋友';
+            
+            const fortune = {
+                姓名: userName,
+                今日日期: today.toLocaleDateString('zh-CN'),
+                星座: `${zodiacInfo.icon} ${zodiac} (${zodiacInfo.date})`,
+                综合运势: randomItem(fortuneData.综合运势),
+                爱情运势: randomItem(fortuneData.爱情运势),
+                事业运势: randomItem(fortuneData.事业运势),
+                财富运势: randomItem(fortuneData.财富运势),
+                幸运数字: randomItem(fortuneData.幸运数字),
+                幸运颜色: randomItem(fortuneData.幸运颜色),
+                幸运方位: randomItem(fortuneData.幸运方位),
+                幸运物品: randomItem(fortuneData.幸运物品),
+                今日建议: randomItem(suggestions.爱情) + '，' + randomItem(suggestions.事业)
+            };
+            
+            return fortune;
+        }
+
+        // 显示运势结果
+        function displayFortune(fortune) {
+            const content = document.getElementById('fortuneContent');
+            let html = '';
+            
+            for (let key in fortune) {
+                if (key === '今日建议') {
+                    html += `
+                        <div class="fortune-item">
+                            <div class="fortune-label">${key}：</div>
+                            <div class="fortune-value">${fortune[key]}</div>
+                        </div>
+                    `;
+                } else if (key.includes('运势')) {
+                    html += `
+                        <div class="fortune-item">
+                            <div class="fortune-label">${key}：</div>
+                            <div class="stars">${fortune[key]}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="fortune-item">
+                            <div class="fortune-label">${key}：</div>
+                            <div class="fortune-value">${fortune[key]}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // 添加幸运元素
+            html += `
+                <div class="fortune-item">
+                    <div class="fortune-label">幸运元素：</div>
+                    <div>
+                        <span class="lucky-item">数字 ${fortune.幸运数字}</span>
+                        <span class="lucky-item">${fortune.幸运颜色}</span>
+                        <span class="lucky-item">${fortune.幸运方位}</span>
+                        <span class="lucky-item">${fortune.幸运物品}</span>
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+        }
+
+        // 表单提交处理
+        document.getElementById('fortuneForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const birthDate = document.getElementById('birthDate').value;
+            const name = document.getElementById('name').value;
+            
+            if (!birthDate) {
+                alert('请输入您的出生日期！');
+                return;
+            }
+            
+            // 显示加载动画
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('result').classList.remove('show');
+            
+            // 模拟占卜过程
+            setTimeout(() => {
+                const fortune = generateFortune(birthDate, name);
+                displayFortune(fortune);
+                
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('result').classList.add('show');
+            }, 2000);
+        });
+
+        // 设置今天的日期为默认值
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            // 可以设置出生日期的最大值为今天
+            document.getElementById('birthDate').max = today;
+        });
+    </script>
+</body>
+</html>
