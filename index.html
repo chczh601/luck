@@ -17,10 +17,10 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 20px;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         body::before {
@@ -48,9 +48,25 @@
             padding: 40px;
             max-width: 600px;
             width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
             position: relative;
-            overflow: hidden;
             z-index: 1;
+            margin: auto;
+        }
+
+        .container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 10px;
         }
 
         .container::before {
@@ -82,7 +98,7 @@
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         label {
@@ -93,7 +109,10 @@
             font-size: 1.1em;
         }
 
-        input[type="date"], input[type="text"] {
+        input[type="date"], 
+        input[type="text"], 
+        input[type="number"], 
+        select {
             width: 100%;
             padding: 12px;
             background: rgba(0, 0, 0, 0.2);
@@ -104,9 +123,9 @@
             color: white;
         }
 
-        input[type="date"]:focus, input[type="text"]:focus {
+        input:focus, select:focus {
             outline: none;
-            border-color: #FFD700;
+         border-color: #FFD700;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             background: rgba(0, 0, 0, 0.3);
         }
@@ -157,6 +176,22 @@
             border: 1px solid rgba(255, 215, 0, 0.3);
             display: none;
             color: white;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .result::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .result::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .result::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 10px;
         }
 
         .result.show {
@@ -222,7 +257,7 @@
             border-radius: 20px;
             margin: 3px;
             font-size: 0.9em;
-            color: #FFD700;
+          color: #FFD700;
             border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
@@ -245,13 +280,36 @@
             display: block;
         }
 
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
+                margin: 10px;
+                max-height: 95vh;
             }
             
             .title {
                 font-size: 2em;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .result {
+                max-height: 50vh;
+                padding: 15px;
             }
         }
     </style>
@@ -267,15 +325,31 @@
                 <input type="date" id="birthDate" required>
             </div>
             
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">姓名：</label>
+                    <input type="text" id="name" placeholder="请输入您的姓名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">性别：</label>
+                    <select id="gender">
+                        <option value="">请选择</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group">
-                <label for="name">姓名（可选）：</label>
-                <input type="text" id="name" placeholder="请输入您的姓名">
+                <label for="age">年龄：</label>
+                <input type="number" id="age" min="0" max="100" placeholder="请输入您的年龄（可选）">
             </div>
             
             <button type="submit" class="btn">🔮 开始占卜今日运势</button>
         </form>
         
-        <div class="loading" id="loading">
+                <div class="loading" id="loading">
             <p>🔮 正在为您占卜今日运势...</p>
         </div>
         
@@ -313,8 +387,7 @@
             幸运方位: ['东方', '南方', '西方', '北方', '东南方', '西南方', '东北方', '西北方'],
             幸运物品: ['水晶', '玉石', '红绳', '硬币', '四叶草', '星星', '月亮']
         };
-
-        // 运势建议
+// 运势建议
         const suggestions = {
             爱情: ['今天适合表达心意', '保持真诚的态度', '多关心身边的人', '缘分就在不远处'],
             事业: ['把握机会展现才华', '团队合作会带来好运', '保持积极的心态', '细节决定成败'],
@@ -322,7 +395,7 @@
             健康: ['保持充足睡眠', '适量运动有益健康', '饮食要均衡营养', '保持心情愉悦']
         };
 
-                // 获取星座
+        // 获取星座
         function getZodiac(month, day) {
             if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return '白羊座';
             if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return '金牛座';
@@ -343,8 +416,26 @@
             return array[Math.floor(Math.random() * array.length)];
         }
 
+        // 计算年龄
+        function calculateAge(birthDate) {
+            const birth = new Date(birthDate);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // 验证出生年份
+        function validateBirthYear(birthDate) {
+            const year = new Date(birthDate).getFullYear();
+            return year >= 1970 && year <= 2025;
+        }
+
         // 生成运势
-        function generateFortune(birthDate, name) {
+        function generateFortune(birthDate, name, gender, age) {
             const birth = new Date(birthDate);
             const today = new Date();
             
@@ -352,9 +443,18 @@
             const zodiacInfo = zodiacData[zodiac];
             
             const userName = name || '朋友';
+            const calculatedAge = age || calculateAge(birthDate);
+            
+            let genderText = '';
+            if (gender === '男') {
+                genderText = '先生';
+            } else if (gender === '女') {
+                genderText = '女士';
+            }
             
             const fortune = {
-                姓名: userName,
+                姓名: userName + (genderText ? ` ${genderText}` : ''),
+                年龄: `${calculatedAge}岁`,
                 今日日期: today.toLocaleDateString('zh-CN'),
                 星座: `${zodiacInfo.icon} ${zodiac} (${zodiacInfo.date})`,
                 综合运势: randomItem(fortuneData.综合运势),
@@ -370,7 +470,6 @@
             
             return fortune;
         }
-
         // 显示运势结果
         function displayFortune(fortune) {
             const content = document.getElementById('fortuneContent');
@@ -423,9 +522,21 @@
             
             const birthDate = document.getElementById('birthDate').value;
             const name = document.getElementById('name').value;
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value;
             
             if (!birthDate) {
                 alert('请输入您的出生日期！');
+                return;
+            }
+            
+            if (!validateBirthYear(birthDate)) {
+                alert('出生年份必须在1970～2025年之间！');
+                return;
+            }
+            
+            if (age && (age < 0 || age > 100)) {
+                alert('年龄必须在0～100岁之间！');
                 return;
             }
             
@@ -435,19 +546,31 @@
             
             // 模拟占卜过程
             setTimeout(() => {
-                const fortune = generateFortune(birthDate, name);
+                const fortune = generateFortune(birthDate, name, gender, age);
                 displayFortune(fortune);
                 
                 document.getElementById('loading').classList.remove('show');
                 document.getElementById('result').classList.add('show');
+                
+                // 滚动到结果区域
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 2000);
         });
-
-        // 设置今天的日期为默认值
+       // 设置日期限制
         document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            // 可以设置出生日期的最大值为今天
-            document.getElementById('birthDate').max = today;
+            const today = new Date();
+            const minDate = new Date('1970-01-01');
+            const maxDate = new Date('2025-12-31');
+            
+            document.getElementById('birthDate').min = minDate.toISOString().split('T')[0];
+            document.getElementById('birthDate').max = maxDate.toISOString().split('T')[0];
+            document.getElementById('birthDate').max = today.toISOString().split('T')[0];
+        });
+
+        // 年龄输入验证
+        document.getElementById('age').addEventListener('input', function() {
+            if (this.value < 0) this.value = 0;
+            if (this.value > 100) this.value = 100;
         });
     </script>
 </body>
